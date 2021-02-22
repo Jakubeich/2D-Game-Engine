@@ -32,7 +32,7 @@ public class Renderer {
 	
 	public void setPixel(int x, int y, int value) {
 		
-		if(x < 0 || x >= pW || y < 0 || y >= pH || value == 0xffff00ff) {
+		if(x < 0 || x >= pW || y < 0 || y >= pH || ((value >> 24) & 0xff) == 0) {
 			return;
 		}
 		
@@ -101,7 +101,7 @@ public class Renderer {
 	
 	public void drawImageTile(ImageTile image, int offX, int offY, int tileX, int tileY) {
 		
-		//Dont Render code
+		//Don't Render code
 		if(offX < -image.getTileW()) return;
 		if(offY < -image.getTileH()) return;
 		if(offX >= pW ) return;
@@ -128,5 +128,48 @@ public class Renderer {
 		}
 		
 	}
-
+	
+	public void drawRect(int offX, int offY, int width, int height, int color) {
+		
+		for(int y = 0; y <= height; y++) {
+			
+			setPixel(offX, y + offY, color);
+			setPixel(offX + width, y + offY, color);
+			
+		}
+		
+		for(int x = 0; x <= width; x++) {
+			
+			setPixel(x + offX, offY, color);
+			setPixel(x + offX, offY + height, color);
+			
+		}	
+	}
+	
+	public void drawFillRect(int offX, int offY, int width, int height, int color) {
+		
+		if(offX < -width) return;
+		if(offY < -height) return;
+		if(offX >= pW ) return;
+		if(offY >= pH) return;
+		
+		int newX = 0;
+		int newY = 0;
+		int newWidth = width;
+		int newHeight = height;
+		
+		if(offX < 0) {newX -= offX;}
+		if(offY < 0) {newY -= offY;}
+		if(newWidth + offX >= pW) {newWidth -= newWidth + offX - pW;}
+		if(newHeight + offY >= pH) {	newHeight -= newHeight + offY - pH;}
+		
+		for(int y = newY; y <= newHeight; y++) {
+			
+			for(int x = newX; x <= newWidth; x++) {
+				
+				setPixel(x + offX, y + offY, color);
+			}
+		}
+		
+	}
 }
